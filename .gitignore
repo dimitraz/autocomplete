@@ -11,6 +11,7 @@ dump
 .classpath
 bin
 
+.DS_Store
 
 
 
