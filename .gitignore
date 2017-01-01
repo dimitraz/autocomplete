@@ -1,0 +1,16 @@
+# general
+*~
+*.log
+tmp
+dump
+
+# Eclipse
+.settings
+.cache
+.project
+.classpath
+bin
+
+
+
+

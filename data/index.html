@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Autocomplete</title>
+
+<link href="https://fonts.googleapis.com/css?family=Inconsolata"
+	rel="stylesheet">
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+<style type="text/css">
+* {
+	box-sizing: border-box;
+}
+
+html {
+	min-height: 100%;
+}
+
+body {
+	width: 250px;
+	margin: 0 auto;
+	padding: 5em 2em 2em 2em;
+}
+
+body, input, select {
+	font-family: 'Inconsolata', monospace;
+	background: #000;
+	color: #fff;
+	font-size: 15px;
+	-webkit-font-smooting: antialiased;
+}
+
+input, select {
+	width: 200px;
+	margin-bottom: 1em;
+}
+
+input {
+	padding: 1em;
+	border: 2px solid #fff;
+}
+
+select {
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
+	-webkit-border-radius: 0px;
+	padding: 1em;
+	border: 2px solid #fff;
+}
+
+section {
+	margin: 0 auto;
+	text-align: center;
+	position: relative;
+}
+
+ul {
+	margin: 0;
+	padding: 0;
+}
+
+ul li {
+	list-style: none;
+	border-bottom: 2px solid #fff;
+	border-left: 2px solid #fff;
+	border-right: 2px solid #fff;
+	padding: 1em;
+}
+
+ul li:hover {
+	cursor: pointer;
+}
+</style>
+
+<script>
+		function clearText() {
+			$("#search").val('');
+			$(".ui-helper-hidden-accessible").first().html('');
+		}
+		
+		$(document).ready(function(){ 
+		    $("#search").autocomplete({
+		        source: function( request, response ) {
+		        $.ajax({
+		            url: "http://localhost:9000",
+		            data: {"name":"restrictedSearch", "id":$("#select").prop('selectedIndex'), "searchString":request.term, "intMatches": "5"},
+		            dataType: "json",
+		            success: function (data) {
+		                console.log("Debug", data);
+		                response($.map(data, function (item) {
+		                   if($("#select").prop('selectedIndex') == 3) {
+			                   return {
+					                id: item.id,
+					                label: item.weight
+					           };	
+		                } else {
+		                	return {
+				                label: item.term,
+				                id: item.id,
+				                weight: item.weight
+				            };
+		                }
+		                }));
+		            },
+		            error: function(errorThrown){
+		                console.log("Error occurred: ", errorThrown);                        
+		            },
+		            type: "POST",
+		        });
+		    },
+		    minLength: 1
+		    });
+		});
+		</script>
+
+</head>
+<body>
+
+	<section>
+		<div class="box">
+			<select id="select" onchange="clearText();">
+				<option value="0">» Search</option>
+				<option value="1">» Restricted Search (5)</option>
+				<option value="2">» Best match</option>
+				<option value="3">» Weight of term</option>
+			</select>
+		</div>
+
+		<div class="box">
+			<div id="s">
+				<input type="text" id="search">
+			</div>
+		</div>
+	</section>
+
+</body>
+</html>
